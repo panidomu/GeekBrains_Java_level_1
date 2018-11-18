@@ -8,6 +8,8 @@ package geekbrains.java1;
 // «Повторить игру еще раз?
 // 1 – да / 0 – нет»(1 – повторить, 0 – нет).
 
+//Вариант 2 ************************************************
+
 import java.util.Random;
 import java.util.Scanner;
 
