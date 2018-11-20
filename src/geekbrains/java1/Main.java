@@ -1,113 +1,154 @@
-//Created  by Natalia Savelieva on 06.11.2018
-
-//Homework part 1
-
 package geekbrains.java1;
 
-import java.util.Scanner; // оно само появилось:)
+import java.text.MessageFormat;
+import java.util.Random;
+import java.util.Scanner;
 
-public class Main { // объявление класса Main
+public class Main {
+   // public class XOGame {
 
-    public static void main(String[] args) { //объявление метода main
+        public static String[][] map;
+        public static final int SIZE = 3;
+        public static final int DOT_TO_WIN = 3;
 
-        // Присваиваем значения переменным:
-        int a = 5;
-        int b = 3;
-        int c = 4;
-        int d = 2;
-        int e = 5;
-        int f = 15;
-        int g = 7;
-        int h = -1;
-        int y = 2004;
+        // Ячейки поля
+        public static final String DOT_EMPTY = "*";
+        public static final String DOT_X = "X";
+        public static final String DOT_O = "O";
 
-        //Вызываем методы:
-        // System.out.println(part2(firstByte , firstShort , firstInt , firstLong , firstFloat , doubleFirst , booleanFirst , charFirst));
-        System.out.println(myMethod(a, b, c, d));
-        System.out.println(method_If_1(e, f));
-       // System.out.println(method_If_2(g));
-        System.out.println(method_If_3(h));
-        //printName(MyName: "Natalia");
-        //     System.out.println(year( int y));
-        //Определяем методы:
+    public static void main(String[] args) {
+        initMap();
+        printMap();
+
+        while (true) {
+            humanTurn();
+            printMap();
+            if (checkWin(DOT_X)) {
+                System.out.println("Победил человек!");
+                break;
+            }
+            if (isMapFull()) {
+                System.out.println("Ничья");
+                break;
+            }
+            computerTurn();
+            printMap();
+            if (checkWin(DOT_O)) {
+                System.out.println("Выиграл компьютер!");
+                break;
+            }
+            if (isMapFull()) {
+                System.out.println("Ничья");
+                break;
+            }
+        }
+        System.out.println("Игра закончена!");
+
     }
-
-    //Homework part 2
-    public static void part2() {
-        System.out.println("********part 2********");
-        byte firstByte = 126;
-        short firstShort = 0;
-        int firstInt = -10000;
-        long firstLong = 999999999999L;
-        float firstFloat = 3.14f;
-        double doubleFirst = 2.0008;
-        boolean booleanFirst = false;
-        char charFirst = '0';
-        System.out.println(firstByte + firstShort + firstInt + firstLong + firstFloat + String.valueOf(doubleFirst) + booleanFirst + charFirst);
-    }
-
-    //Homework part 3
-    public static int myMethod(int a, int b, int c, int d) {
-        System.out.println("********part 3********");
-        System.out.println("a * (b + (c / d)) =" + ((a * (b + (c / d)))));
-        return ((a * (b + (c / d)))); //после return никакой код не выполняется
-    }
-
-    //Homework part 4
-    public static boolean method_If_1(int e, int f) {
-        // boolean myRequest;
-        System.out.println("********part 4 ********");
-        if ((10 <= (e + f)) && ((e + f) <= 20)) {
-            // myRequest = true;
+        /**
+         * Метод инициализирует игровое поле
+         */
+        public static void initMap() {
+            map = new String[SIZE][SIZE];
+            // В циклах происходит заполение массива элементами из DOT_EMPTY
+            for (int i = 0; i < map.length; i++) {
+                for (int j = 0; j < map[i].length; j++) {
+                    map[i][j] = DOT_EMPTY;
+                }
+            }
+        }
+        /**
+         * Метод печатает игровое поле в консоль
+         */
+        public static void printMap() {
+            System.out.print("  ");
+            for (int i = 1; i <= SIZE; i++) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+            for (int i = 0; i < SIZE; i++) {
+                System.out.print((i + 1) + " ");
+                for (int j = 0; j < SIZE; j++) {
+                    System.out.print(map[i][j] + " ");
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }
+        /**
+         * Метод обрабатывает ход человека
+         */
+        public static void humanTurn() {
+            Scanner scanner = new Scanner(System.in);
+            int row;
+            int column;
+            do {
+                System.out.println("Введите координаты хода в формате X и Y, \n" +
+                        "где X - номер строки, а Y - номер колонки");
+                row = scanner.nextInt() - 1;
+                column = scanner.nextInt() - 1;
+            } while (isCellNotValid(row, column));
+            map[row][column] = DOT_X;
+        }
+        /**
+         * Метод обрабатывает ход компьютера
+         */
+        public static void computerTurn() {
+            Random random = new Random();
+            int row;
+            int column;
+            do {
+                row = random.nextInt(SIZE);
+                column = random.nextInt(SIZE);
+            } while (isCellNotValid(row, column));
+            System.out.println(
+                    MessageFormat.format("Компьютер походил в точку {0} {1}",
+                            row + 1, column + 1));
+            map[row][column] = DOT_O;
+        }
+        /**
+         * Метод проверяет координаты хода на допустимость.
+         * @param row    координата строки
+         * @param column координата колонки
+         * @return {@code true} если ход допустим, иначе {@code false}
+         */
+        public static boolean isCellNotValid(int row, int column) {
+            if (row < 0 || row >= SIZE || column < 0 || column >= SIZE) {
+                return true;
+            }
+            // Сравнивать строки нужно только методом equals()
+            if (map[row][column].equals(DOT_EMPTY)) {
+                return false;
+            }
             return true;
-        } else {
-            // myRequest = false;
+        }
+        /**
+         * Метод проверяет поле на наличие пустых клеток
+         * @return {@code true} если пустых клеток нет, иначе {@code false}
+         */
+        public static boolean isMapFull() {
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (map[i][j].equals(DOT_EMPTY)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        public static boolean checkWin(String symb) {
+            // проверка линий
+            if(map[0][0].equals(symb) && map[0][1].equals(symb) && map[0][2].equals(symb)) return true;
+            if(map[1][0].equals(symb) && map[1][1].equals(symb) && map[1][2].equals(symb)) return true;
+            if(map[2][0].equals(symb) && map[2][1].equals(symb) && map[2][2].equals(symb)) return true;
+            // проверка столбцов
+            if(map[0][0].equals(symb) && map[1][0].equals(symb) && map[2][0].equals(symb)) return true;
+            if(map[0][1].equals(symb) && map[1][1].equals(symb) && map[2][1].equals(symb)) return true;
+            if(map[0][2].equals(symb) && map[1][2].equals(symb) && map[2][2].equals(symb)) return true;
+            // проверка диагоналей
+            if(map[0][0].equals(symb) && map[1][1].equals(symb) && map[2][2].equals(symb)) return true;
+            if(map[2][0].equals(symb) && map[1][1].equals(symb) && map[0][2].equals(symb)) return true;
             return false;
         }
+
     }
-
-    //Homework part 5
-//    public static void method_If_2(int g) {
-//        System.out.println("********part 5********");
-//        if (g >= 0) {
-//            System.out.println(g + "положительное число ");
-//        }else{
-//        if (g < 0) {
-//            System.out.println(g + "отрицательное число ");
-//        }
-//    }
-
-    //Homework part 6
-    public static boolean method_If_3(int h) {
-        System.out.println("********part 6********");
-        if (h < 0) {
-            return true;
-            // System.out.println(h + "отрицательное число "); //до этого места программа не дойдет
-        }
-        return false;
-        // System.out.println(h + "положительное число "); //до этого места программа не дойдет
-    }
-
-    //Homework part 7
-    public static void printName(String MyName) {
-        System.out.println("********part 7********");
-        System.out.println("Hello," + MyName + "!");
-    }
-
-    //Homework part 8
-
-
-    public static void year(int y) {
-        System.out.println("********part 8********");
-        System.out.println("Input year:");
-        Scanner scanner = new Scanner(System.in);
-        y = scanner.nextInt();
-        System.out.println("Year:" + y);
-        if ((((y % 4) == 0) || ((y % 400) == 0)) && ((y % 100) != 0)) {
-            System.out.println("Yes");
-        }
-        System.out.println("No");
-    }
-}
-
-
